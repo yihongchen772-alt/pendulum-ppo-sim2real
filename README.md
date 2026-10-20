@@ -4,7 +4,11 @@ Master's project at the National University of Singapore (2025–2026).
 A neural-network policy trained with continuous-action PPO replaces the LQR of a commercial
 Acrome cart–pole pendulum and runs on the real hardware (Raspberry Pi, 250 Hz, Simulink + Embedded Coder).
 
-<!-- Video: drag the video file into this README on GitHub, or paste a YouTube/Bilibili link here -->
+<!-- Video: drag the video file into this README on GitHub, or paste a YouTube/Bilibili link here 
+
+https://github.com/user-attachments/assets/20ebd535-814c-48e8-a4e5-8f570861dfc7
+
+-->
 
 ## Results on the hardware
 
