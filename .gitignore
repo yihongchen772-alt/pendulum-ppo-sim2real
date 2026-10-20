@@ -1,0 +1,6 @@
+.DS_Store
+*.asv
+slprj/
+*_ert_rtw/
+*.slxc
+*.elf
