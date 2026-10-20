@@ -4,7 +4,9 @@ Master's project at the National University of Singapore (2025–2026).
 A neural-network policy trained with continuous-action PPO replaces the LQR of a commercial
 Acrome cart–pole pendulum and runs on the real hardware (Raspberry Pi, 250 Hz, Simulink + Embedded Coder).
 
-<!-- Video:https://github.com/user-attachments/assets/20ebd535-814c-48e8-a4e5-8f570861dfc7-->
+https://github.com/user-attachments/assets/20ebd535-814c-48e8-a4e5-8f570861dfc7
+
+![The Acrome cart–pole platform](media/platform.jpg)
 
 ## Results on the hardware
 
@@ -22,6 +24,16 @@ Last 45 s of steady balancing, injection segments removed.
   before the test: closed-loop sensitivity |S| at 2.5 Hz was 3.3–3.4, against 5.6–5.7 for S8.
 - A slow integral outer loop removed the cart offset caused by the drifting angle-sensor zero (−124 mm → −3 mm).
 
+![Rod angle jitter against cart offset for every controller tested on the hardware](media/fig_tradeoff.png)
+*Rod angle jitter against cart offset on the hardware. Squares: RL policies; circles: linear controllers.*
+
+![Calibrated simulator predictions against hardware](media/fig_v1.png)
+*Left: sensitivity of the manufacturer's LQR predicted by the calibrated simulator before the test, with the hardware points.
+Right: S8 and S12 on the hardware (two runs) against the simulator.*
+
+![Outer loop on and off](media/fig_outer.png)
+*Outer loop switched on (B) and off (A): the cart returns to the centre as the reference angle settles at the sensor zero.*
+
 ## What was hard
 
 - **Policies that balanced perfectly in simulation failed on the hardware.** A network trained to imitate the LQR,
@@ -31,6 +43,8 @@ Last 45 s of steady balancing, injection segments removed.
 - **Closed-loop system identification** with a stepped-sine probe showed the simulator lacked 40–90° of phase lag.
   With friction and inertia measured in open-loop tests, the calibrated simulator predicted the manufacturer's LQR
   sensitivity at eight frequencies within 20 %, before the data were recorded.
+
+  ![Sensitivity in the original and calibrated simulators against hardware probes](media/fig_sens.png)
 - **Hinge constraints on the actor loss** encode the properties exposed by each failed hardware test (gain at the
   oscillation frequency, far-field thrust, channel signs, velocity gain), because they are properties of the network
   function and cannot be written as per-step rewards.
