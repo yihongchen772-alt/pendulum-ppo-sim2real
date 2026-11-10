@@ -1,38 +1,23 @@
 # PPO Control of a Real Inverted Pendulum (Sim-to-Real)
 
 Master's project at the National University of Singapore (2025–2026).
-A neural-network policy trained with continuous-action PPO replaces the LQR of a commercial
-Acrome cart–pole pendulum and runs on the real hardware (Raspberry Pi, 250 Hz, Simulink + Embedded Coder).
+**Question: is a deep RL policy more robust than classical control on a real pendulum, and what does it take?**
+Continuous-action PPO policies are compared with the LQR supplied with a commercial Acrome cart–pole pendulum,
+on the real hardware (Raspberry Pi, 250 Hz, Simulink + Embedded Coder).
 
-https://github.com/user-attachments/assets/20ebd535-814c-48e8-a4e5-8f570861dfc7
+[![Hardware tests, 10 November 2026](media/preview.gif)](media/videos/defense_reel.mp4)
+*Hardware, 10 November 2026: the same programmed push, centring under a deliberate sensor offset, and a policy that was best in the original simulator oscillating on the hardware. Click for the [3-minute video with sound](media/videos/defense_reel.mp4).*
+
+**In short**
+
+- **Margin:** in the same runs as the supplied LQR, the policies S13b and S17 had a lower peak sensitivity in every calibrated run (4.3–4.9 against at least 6.4). Confirmed on the hardware, against a prediction written before the test.
+- **Centring under a sensor offset:** S17 stayed within 2 mm of the centre under offsets of ±20 mrad, where the LQR sat 72–86 mm away. This comes from an integral input added by hand, not from the network.
+- **Smoothness:** only about 10 % better and only qualitative. **Cart motion:** 14–25 % worse than the LQR.
+- **What it took:** a simulator calibrated against the hardware. Policies trained in the original simulator failed on the hardware, and the one that ranked first in it oscillated.
+  RL was not model-free in practice: the simulator decided what it learned.
+- One seed, one day of tests: not a statistical result.
 
 ![The Acrome cart–pole platform](media/platform.jpg)
-
-## Results on the hardware
-
-Last 45 s of steady balancing, injection segments removed.
-
-| Controller | θ std | θ peak | PWM std |
-|---|---|---|---|
-| PPO policy trained from scratch (S8) | 0.98° | **4.1°** | 114 |
-| Network clone of the LQR, gains × 0.85 (best linear controller tested) | 0.99° | 6.1° | 119 |
-| Manufacturer's LQR block (recorded on another day) | 1.39° | 6.1° | 132 |
-
-- The policy trained from scratch reached the level of the best linear controller tested, with the lowest peak angle.
-  Recorded on the same day as the manufacturer's LQR, it balanced about equally well and had a lower peak sensitivity.
-- A policy retrained in a calibrated simulator (S12) kept a larger stability margin on the hardware, as predicted
-  before the test: closed-loop sensitivity |S| at 2.5 Hz was 3.3–3.4, against 5.6–5.7 for S8.
-- A slow integral outer loop removed the cart offset caused by the drifting angle-sensor zero (−124 mm → −3 mm).
-
-![Rod angle jitter against cart offset for every controller tested on the hardware](media/fig_tradeoff.png)
-*Rod angle jitter against cart offset on the hardware. Squares: RL policies; circles: linear controllers.*
-
-![Calibrated simulator predictions against hardware](media/fig_v1.png)
-*Left: sensitivity of the manufacturer's LQR predicted by the calibrated simulator before the test, with the hardware points.
-Right: S8 and S12 on the hardware (two runs) against the simulator.*
-
-![Outer loop on and off](media/fig_outer.png)
-*Outer loop switched on (B) and off (A): the cart returns to the centre as the reference angle settles at the sensor zero.*
 
 ## Latest hardware test: RL against the supplied LQR in the same run (10 November 2026)
 
@@ -78,6 +63,32 @@ Short clips with data overlays; the background is blurred. Click a picture to op
 | **S8 against ABL-E**: the variant that ranked first in the original simulator oscillates near 2.9 Hz on the hardware; sound on ([C5_S8_vs_E.mp4](media/videos/C5_S8_vs_E.mp4)) | **S8 at rest**: trained from scratch ([C6_S8.mp4](media/videos/C6_S8.mp4)) |
 
 Also: [opening clip](media/videos/C1_opening.mp4), [light hand pushes](media/videos/C4_hand_push.mp4) (demonstration only), and the [3-minute reel](media/videos/defense_reel.mp4).
+
+## Earlier results: S8 and S12 (September–October 2026)
+
+Last 45 s of steady balancing, injection segments removed.
+
+| Controller | θ std | θ peak | PWM std |
+|---|---|---|---|
+| PPO policy trained from scratch (S8) | 0.98° | **4.1°** | 114 |
+| Network clone of the LQR, gains × 0.85 (best linear controller tested) | 0.99° | 6.1° | 119 |
+| Manufacturer's LQR block (recorded on another day) | 1.39° | 6.1° | 132 |
+
+- The policy trained from scratch reached the level of the best linear controller tested, with the lowest peak angle.
+  Recorded on the same day as the manufacturer's LQR, it balanced about equally well and had a lower peak sensitivity.
+- A policy retrained in a calibrated simulator (S12) kept a larger stability margin on the hardware, as predicted
+  before the test: closed-loop sensitivity |S| at 2.5 Hz was 3.3–3.4, against 5.6–5.7 for S8.
+- A slow integral outer loop removed the cart offset caused by the drifting angle-sensor zero (−124 mm → −3 mm).
+
+![Rod angle jitter against cart offset for every controller tested on the hardware](media/fig_tradeoff.png)
+*Rod angle jitter against cart offset on the hardware. Squares: RL policies; circles: linear controllers.*
+
+![Calibrated simulator predictions against hardware](media/fig_v1.png)
+*Left: sensitivity of the manufacturer's LQR predicted by the calibrated simulator before the test, with the hardware points.
+Right: S8 and S12 on the hardware (two runs) against the simulator.*
+
+![Outer loop on and off](media/fig_outer.png)
+*Outer loop switched on (B) and off (A): the cart returns to the centre as the reference angle settles at the sensor zero.*
 
 ## What was hard
 
